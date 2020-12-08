@@ -28,12 +28,13 @@ app.use('/category', category);
 app.use('/subCategory', subCategory);
 app.use('/auth', auth);
 
+app.get("/", (req, res)=>res.send("Helloo!!!"));
 
 mongoose.connect('mongodb+srv://balu:mongopassword@cluster0.6ujrr.mongodb.net/example?retryWrites=true&w=majority', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   }).then(res => {
-    app.listen(process.env.PORT, ()=>console.log("Server started!!!"));
+    app.listen(process.env.PORT || 8080, ()=>console.log("Server started!!!"));
 }).catch(err => {
     console.log(err);
 });
@@ -42,30 +43,3 @@ mongoose.connect('mongodb+srv://balu:mongopassword@cluster0.6ujrr.mongodb.net/ex
 
 
 
-
-// const express = require("express");
-// const bodyParser = require("body-parser");
-// const mongoose = require("mongoose");
-// const app = express();
-
-// app.use(bodyparser.json());
-
-// const dbUrl =
-//   "mongodb+srv://balu:mongopassword@cluster0.6ujrr.mongodb.net/example?retryWrites=true&w=majority";
-
-// app.get("/", (req, res) => {
-//   res.json({
-//     message: "hello"
-//   });
-// });
-
-// mongoose
-//   .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then((result) => {
-//     app.listen(8000, () => {
-//       console.log("server started!!!");
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
