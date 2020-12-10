@@ -3,11 +3,8 @@ require('dotenv').config()
 
 module.exports = (req, res, next) => {
     let authheader;
-    try{
-        authheader = req.get('Authorization').split(" ")[1];
-    }catch{
-        res.status(400).json({ message: "no token provided !!!" });
-    }
+    try{authheader = req.get('Authorization').split(" ")[1];
+    }catch{res.status(400).json({ message: "no token provided !!!" });}
     
     let deauthtoken;
 
@@ -19,6 +16,7 @@ module.exports = (req, res, next) => {
         res.status(400).json({ message: "invalid token!!!" });
     }
     req.emailid = deauthtoken.emailid;
+    req.userid = deauthtoken.userid;
 
     next();
 }

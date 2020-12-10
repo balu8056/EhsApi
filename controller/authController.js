@@ -1,6 +1,7 @@
 const userDb = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
 require("dotenv").config();
 const saltRounds = 10;
 
@@ -37,7 +38,7 @@ exports.signup = (req, res, next) => {
         });
       })
       .catch((err) => {
-        res.json({ error: "dfg " + err });
+        res.status(400).json({ error: `${err}` });
       });
   };
 
@@ -57,6 +58,7 @@ exports.signup = (req, res, next) => {
     .catch((err) => {
       res.status(400).json({ error: `${err}` });
     });
+
 };
 
 exports.login = (req, res, next) => {
@@ -73,7 +75,7 @@ exports.login = (req, res, next) => {
             res.status(400).json({ message: "password doesn't match!!!" });
           } else {
             const token = jwt.sign(
-              { emailid: userRes.emailid },
+              { emailid: userRes.emailid, userid: userRes._id },
               process.env.SECRET, {
                 expiresIn: 86400 // expires in 24 hours
               }
@@ -91,6 +93,8 @@ exports.login = (req, res, next) => {
           }
         });
       }
+    }).catch(err=>{
+      res.status(400).json({ error: `${err}` });
     });
 };
 
@@ -114,9 +118,7 @@ exports.updateUser = async (req, res, next) => {
   payload.lastname ? (updateObj.lastname = payload.lastname) : null;
   payload.phonenumber ? (updateObj.phonenumber = payload.phonenumber) : null;
   payload.address ? (updateObj.address = payload.address) : null;
-  payload.isAccountActive
-    ? (updateObj.isAccountActive = payload.isAccountActive)
-    : null;
+  payload.isAccountActive ? (updateObj.isAccountActive = payload.isAccountActive) : null;
 
   if (payload.oldPassword) {
     userDb
@@ -149,54 +151,4 @@ exports.updateUser = async (req, res, next) => {
       res.status(400).json({ error: err });
     }
   }
-
-  // const payload = req.body;
-  // let updateObj = {};
-
-  // payload.firstname? updateObj.firstname = payload.firstname: null;
-  // payload.lastname? updateObj.lastname = payload.lastname: null;
-  // payload.phonenumber? updateObj.phonenumber = payload.phonenumber: null;
-  // payload.address? updateObj.address = payload.address: null;
-
-  // const oldPassword = payload.oldPassword;
-  // console.log(oldPassword);
-
-  // userDb.find({emailid: payload.emailid})
-  // .then(userRes=>{
-  //     if (userRes.length === 0 ){
-  //         res.status(400).json({message: "User not found!!!"});
-  //     }
-  //     if (!payload.password){
-  //         try{
-  //             let result = userDb
-  //             .update({ emailid: userRes.emailid }, updateObj, { multi: false })
-  //             .exec();
-  //           res.json({ updated: true, update: updateObj });
-  //         }catch(err){
-  //             res.json({error: err});
-  //         }
-  //     }else{
-  //         bcrypt.compare(oldPassword, userRes.password, (err, isSame)=>{
-  //             if (!isSame){res.status(400).json({message: "password doesn't match with old password!!!"});}
-  //             else{
-  //                     payload.password ?
-  //                         bcrypt.hash(payload.password, saltRounds, (err, hashedPassword) => {
-  //                             updateObj.password = hashedPassword;
-  //                             try{
-  //                                 let result = userDb
-  //                                 .update({ emailid: userRes.emailid }, updateObj, { multi: false })
-  //                                 .exec();
-  //                                 res.json({ updated: true, update: updateObj });
-  //                             }catch(err){
-  //                                 res.json({error: err});
-  //                             }
-  //                         })
-  //                     : null;
-  //             }
-  //         })
-
-  //     }
-
-  // })
-  // .catch()
 };
