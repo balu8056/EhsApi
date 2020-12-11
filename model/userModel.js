@@ -30,19 +30,57 @@ const userschema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    orders: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Orders"
+        }
+      ]
+    },
+    wishList: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "PosterModel"
+        }
+      ]
+    },
+    cart: {
+      type: [
+        {
+          itemDetails:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "PosterModel"
+          },
+          material: {
+              type: String
+          },
+          dimension:{
+              type: String
+          },
+          quantity: {
+              type: Number
+          },
+          total: {
+              type: String
+          }
+        }
+      ],
+    },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-userschema.pre('save', function(next) {
+userschema.pre("save", function (next) {
   const user = this;
-  if(!user.isModified || !user.isNew) { // don't rehash if it's an old user
+  if (!user.isModified || !user.isNew) {   // don't rehash if it's an old user
     next();
   } else {
-    console.log("user ,pre saving "+user.emailid);
+    console.log("user ,pre saving " + user.emailid);
     bcrypt.hash(user.password, saltRounds, (err, hash) => {
       if (err) {
-        console.log('Error hashing password for user', user.emailid);
+        console.log("Error hashing password for user", user.emailid);
         next(err);
       } else {
         user.password = hash;

@@ -7,6 +7,7 @@ const material = require("./routes/material");
 const category = require("./routes/category");
 const subCategory = require("./routes/subCategory");
 const auth = require("./routes/auth");
+const orders = require("./routes/orders");
 const cors = require("cors");
 const helmet = require("helmet");
 
@@ -33,6 +34,7 @@ app.use("/material", material);
 app.use("/category", category);
 app.use("/subCategory", subCategory);
 app.use("/auth", auth);
+app.use("/orders", orders);
 
 app.get("/", (req, res) => res.json({message: "Helloo!!!"}));
 

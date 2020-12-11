@@ -9,7 +9,7 @@ exports.getMaterial = (req, res, next)=>{
         .json({ materialDimension: metDim, message: "succesfully loaded" });
     })
     .catch((err) => {
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     });
 
 }
@@ -28,7 +28,7 @@ exports.createMaterial = async(req, res, next)=>{
       });
     })
     .catch((err) => {
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     });
     
 }
@@ -48,7 +48,7 @@ exports.updateMaterial = async(req, res, next)=>{
         .exec();
       res.json({ updated: true, update: updateObj });
     }catch(err){
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     }
 
     
@@ -57,12 +57,16 @@ exports.deleteMaterial =async (req, res, next)=>{
       
     let {materialId} = req.body;
 
-    try {
-        let result = await materialDimensionDb
-          .update({ _id: materialId }, {isActive: false}, { multi: false })
-          .exec()
-        res.json({ deleted: true, message: "deleted Successfully!!!" });
-      } catch (err) {
-        res.json({ errormessage: err });
-      }
+    if (materialId){
+      try {
+          let result = await materialDimensionDb
+            .update({ _id: materialId }, {isActive: false}, { multi: false })
+            .exec()
+          res.json({ deleted: true, message: "deleted Successfully!!!" });
+        } catch (err) {
+          res.status(400).json({ error: `${err}` });
+        }
+    }else{
+      res.status(400).json({ error: "Provide material id!!!" });
+    }
 }

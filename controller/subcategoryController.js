@@ -9,7 +9,7 @@ exports.getSubCategory = (req, res, next)=>{
         .json({ subCategory: subCategory, message: "succesfully loaded" });
     })
     .catch((err) => {
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     });
 
 }
@@ -28,7 +28,7 @@ exports.createSubCategory = async(req, res, next)=>{
       });
     })
     .catch((err) => {
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     });
     
 }
@@ -46,11 +46,11 @@ exports.updateSubCategory = async(req, res, next)=>{
         .exec();
       res.json({ updated: true, update: updateObj });
     }catch(err){
-        res.json({error: err});
+      res.status(400).json({ error: `${err}` });
     }
 
-    
 }
+
 exports.deleteSubCategory =async (req, res, next)=>{
       
     let {subCategoryId} = req.body;
@@ -61,7 +61,7 @@ exports.deleteSubCategory =async (req, res, next)=>{
           .exec()
         res.json({ deleted: true, message: "deleted Successfully!!!" });
       } catch (err) {
-        res.json({ errormessage: err });
+        res.status(400).json({ error: `${err}` });
       }
 
 }

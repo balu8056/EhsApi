@@ -52,13 +52,11 @@ exports.createPoster = async (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.json({ error: err });
+      res.status(400).json({ error: `${err}` });
     });
 };
 
-exports.getPoster = (req, res, next) => {
-
-  console.log(req.emailid);
+exports.getPoster = (req, res, next) => {  
   
   posterDb
     .find({ isActive: true })
@@ -72,7 +70,7 @@ exports.getPoster = (req, res, next) => {
         .json({ posterData: poster, message: "succesfully loaded" });
     })
     .catch((err) => {
-      console.log(err);
+      res.status(400).json({ error: `${err}` });
     });
 };
 
@@ -112,7 +110,7 @@ exports.updatePoster = async (req, res, next) => {
       .exec();
     res.json({ updated: true, update: updateObj });
   } catch (err) {
-    res.json({ errormessage: err });
+    res.status(400).json({ error: `${err}` });
   }
 };
 
@@ -125,6 +123,6 @@ exports.deletePoster = async (req, res, next) => {
       .exec();
     res.json({ deleted: true, message: "deleted Successfully!!!" });
   } catch (err) {
-    res.json({ errormessage: err });
+    res.status(400).json({ error: `${err}` });
   }
 };
