@@ -1,12 +1,37 @@
 const userDb = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
 require("dotenv").config();
+
 const saltRounds = 10;
 
-exports.signup = (req, res, next) => {
-  const createUser = async (res, body, hashedPassword) => {
+exports.getUsers = (req, res, next) => {
+  userDb.find({}, '_id firstname lastname emailid phonenumber address isAccountActive isActive')
+    .then(users=>{
+      res.status(200).json({users: users});
+    })
+    .catch(err=>{
+      res.status(400).json({ error: `${err}` });
+    })
+};
+
+exports.checkAlreadyUserExist = (req, res, next) => {
+  const { emailid } = req.body;
+
+  userDb
+    .findOne({ emailid })
+    .then((userRes) => {
+      if (userRes) 
+        res.status(400).json({ message: "User Already Exists!!!" });
+      else 
+        next();
+    })
+    .catch((err) => {
+      res.status(400).json({ error: `${err}` });
+    });
+};
+
+exports.signup =async (req, res, next) => {
     const {
       firstname,
       lastname,
@@ -14,55 +39,35 @@ exports.signup = (req, res, next) => {
       phonenumber,
       password,
       address,
-    } = body;
+    } = req.body;
 
     let newUser = await new userDb({
-      firstname: firstname,
-      lastname: lastname,
-      emailid: emailid,
-      phonenumber: phonenumber,
-      password: hashedPassword,
-      address: address,
+      firstname,
+      lastname,
+      emailid,
+      phonenumber,
+      password,
+      address
     });
 
     newUser
       .save()
-      .then((newUser) => {
+      .then((user) => {
         res.status(200).json({
           message: "User Created Successfully",
           user: {
-            firstname: newUser.firstname,
-            lastname: newUser.lastname,
-            emailid: newUser.emailid,
-          },
+            firstname: user.firstname,
+            lastname: user.lastname,
+            emailid: user.emailid,
+          }
         });
       })
       .catch((err) => {
         res.status(400).json({ error: `${err}` });
       });
-  };
-
-  const { emailid, password } = req.body;
-
-  userDb
-    .find({ emailid: emailid })
-    .then((userRes) => {
-      if (userRes.length !== 0) {
-        res.status(400).json({ message: "User Already Exists!!!" });
-      } else {
-        bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-          createUser(res, req.body, hashedPassword);
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(400).json({ error: `${err}` });
-    });
-
 };
 
 exports.login = (req, res, next) => {
-
   const { emailid, password } = req.body;
   userDb
     .findOne({ emailid: emailid, isAccountActive: true, isActive: true })
@@ -74,21 +79,19 @@ exports.login = (req, res, next) => {
           if (!isSame) {
             res.status(400).json({ message: "password doesn't match!!!" });
           } else {
-            const token = jwt.sign(
-              { emailid: userRes.emailid, userid: userRes._id },
-              process.env.SECRET, {
-                expiresIn: 86400 // expires in 24 hours
-              }
+            const token = jwt.sign({ emailid: userRes.emailid, userid: userRes._id },
+              process.env.SECRET, {expiresIn: 86400 }
             );
 
             res.status(200).json({
               message: "Logged in successfully!!!",
               token: token,
               user: {
+                userid: userRes.userid,
                 firstname: userRes.firstname,
                 lastname: userRes.lastname,
-                emailid: userRes.emailid,
-              },
+                emailid: userRes.emailid
+              }
             });
           }
         });
@@ -98,57 +101,54 @@ exports.login = (req, res, next) => {
     });
 };
 
-exports.updateUser = async (req, res, next) => {
-  const updatePassword = async (res, updateObj, emailid) => {
-    console.log("updatePass", emailid, updateObj);
-    try {
-      let result = await userDb
-        .updateOne({ emailid: emailid }, updateObj)
-        .exec();
-      res.status(200).json({ updated: true });
-    } catch (err) {
-      res.json({ error: err });
-    }
-  };
+exports.getUpdateUserDetails = (req, res, next) => {
+
+  req.updateObj = {};
 
   const payload = req.body;
-  let emailid = payload.emailid;
-  let updateObj = {};
-  payload.firstname ? (updateObj.firstname = payload.firstname) : null;
-  payload.lastname ? (updateObj.lastname = payload.lastname) : null;
-  payload.phonenumber ? (updateObj.phonenumber = payload.phonenumber) : null;
-  payload.address ? (updateObj.address = payload.address) : null;
-  payload.isAccountActive ? (updateObj.isAccountActive = payload.isAccountActive) : null;
+  const {emailid} = req.body;
 
-  if (payload.oldPassword) {
+  payload.firstname ? (req.updateObj.firstname = payload.firstname) : null;
+  payload.lastname ? (req.updateObj.lastname = payload.lastname) : null;
+  payload.phonenumber ? (req.updateObj.phonenumber = payload.phonenumber) : null;
+  payload.address ? (req.updateObj.address = payload.address) : null;
+  payload.isAccountActive ? (req.updateObj.isAccountActive = payload.isAccountActive) : null;
+
+  if (payload.oldpassword) {
     userDb
-      .findOne({ emailid: emailid })
+      .findOne({ emailid })
       .then((userRes) => {
         if (!userRes) {
           res.status(400).json({ message: "user not found" });
+        }else{
+          bcrypt.compare(payload.oldpassword, userRes.password, (err, isSame) => {
+            if (!isSame) {
+              res.status(400).json({ message: "password not match" });
+            } else {
+              bcrypt.hash(payload.password, saltRounds, (err, hash) => {
+                req.updateObj.password = hash;
+                next()
+              });
+            }
+          });
         }
-        bcrypt.compare(payload.oldPassword, userRes.password, (err, isSame) => {
-          if (!isSame) {
-            res.status(400).json({ message: "password not match" });
-          } else {
-            bcrypt.hash(payload.password, saltRounds, (err, hash) => {
-              updateObj.password = hash;
-              updatePassword(res, updateObj, emailid);
-            });
-          }
-        });
       })
       .catch((err) => {
-        res.json({ error: "last" + err });
+        res.status(400).json({ error: `${err}` });
       });
   } else {
-    try {
-      let result = await userDb
-        .update({ emailid: emailid }, updateObj, { multi: false })
-        .exec();
-      res.status(200).json({ updated: true });
-    } catch (err) {
-      res.status(400).json({ error: err });
-    }
+      next();
+  }
+};
+
+exports.updateUserDetails = async (req, res, next) => {
+  const {emailid} = req.body;
+  try {
+    let result = await userDb
+      .updateOne({ emailid }, req.updateObj)
+      .exec();
+    res.status(200).json({ updated: true });
+  } catch (err) {
+    res.status(400).json({ error: `${err}` });
   }
 };
