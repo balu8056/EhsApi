@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -53,7 +52,6 @@ userschema.pre('save', function(next) {
   }
 });
 
-=======
 const mongoose = require("mongoose");
 
 const userschema = mongoose.Schema({
@@ -85,5 +83,4 @@ const userschema = mongoose.Schema({
   }
 }, {timestamps: { createdAt: "created_at", updatedAt: "updated_at" } });
 
->>>>>>> fb2248c4d67dfe709b73288f432c0bacffeca969
 module.exports = mongoose.model("User", userschema);

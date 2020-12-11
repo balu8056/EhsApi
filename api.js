@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -42,7 +41,6 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true})
   .then((res) => {app.listen(process.env.PORT || 8080, () => console.log("Server started!!!"));})
   .catch((err) => { console.log(err);});
-=======
 require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
@@ -83,9 +81,3 @@ mongoose.connect('mongodb+srv://balu:mongopassword@cluster0.6ujrr.mongodb.net/ex
 }).catch(err => {
     console.log(err);
 });
-
-
-
-
-
->>>>>>> fb2248c4d67dfe709b73288f432c0bacffeca969

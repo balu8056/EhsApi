@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const userDb = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -153,7 +152,6 @@ exports.updateUserDetails = async (req, res, next) => {
     res.status(400).json({ error: `${err}` });
   }
 };
-=======
 const userDb = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -308,4 +306,3 @@ exports.updateUser = async (req, res, next) => {
     }
   }
 };
->>>>>>> fb2248c4d67dfe709b73288f432c0bacffeca969
