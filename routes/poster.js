@@ -1,12 +1,13 @@
 const express = require('express');
 const posterControl = require('../controller/posterController');
+const storageUrl = require("../helpers/storageImg");
 const router = express.Router();
 
 const verifyJwt = require("../middleware/jwt");
 
 router.get('/getPoster', verifyJwt, posterControl.getPoster);
 
-router.post('/createPoster', posterControl.createPoster);
+router.post('/createPoster', storageUrl.single("imgUrl"), posterControl.createPoster);
 
 router.post('/updatePoster', posterControl.updatePoster);
 

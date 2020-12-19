@@ -7,7 +7,8 @@ const materialDimensionModel = new schema({
       type: String,
     },
     imgUrl: {
-      type: String,
+      data: Buffer,
+      contentType: String
     },
     type: {
       type: Number,
