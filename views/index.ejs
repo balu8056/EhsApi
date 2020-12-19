@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Image Uploading</title>
+</head>
+
+<body>
+
+	<h1>Uploaded Images</h1>
+	<div>
+		<% items.forEach(function(image) { %>
+		<div>
+			<div>
+				<img src="data:<%= image.imgUrl.contentType%>;base64,<%=image.imgUrl.data%>" alt="<%= image.name %>">
+				<div>
+					<h5><%= image.name %></h5>
+				</div>
+			</div>
+		</div>
+		<% }) %>
+	</div>
+</body>
+</html>

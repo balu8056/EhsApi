@@ -60,8 +60,8 @@ exports.signup = async (req, res, next) => {
         user: {
           firstname: user.firstname,
           lastname: user.lastname,
-          emailid: user.emailid,
-        },
+          emailid: user.emailid
+        }
       });
     })
     .catch((err) => {
@@ -96,7 +96,7 @@ exports.login = (req, res, next) => {
                 firstname: userRes.firstname,
                 lastname: userRes.lastname,
                 emailid: userRes.emailid,
-                cart: userRes.cart,
+                cart: userRes.cart
               },
             });
           }

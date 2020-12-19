@@ -8,10 +8,12 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
     "express": "^4.17.1",
     "helmet": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.4",
+    "multer": "^1.4.2",
     "react-admin": "^3.10.3"
   },
   "devDependencies": {},

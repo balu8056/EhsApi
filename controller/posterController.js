@@ -34,7 +34,7 @@ exports.createPoster = async (req, res, next) => {
     originalPrice,
     discountPercentage,
     stocks,
-    material, 
+    material,
     dimension,
     tags,
     sku,
@@ -56,8 +56,7 @@ exports.createPoster = async (req, res, next) => {
     });
 };
 
-exports.getPoster = (req, res, next) => {  
-  
+exports.getPoster = (req, res, next) => {
   posterDb
     .find({ isActive: true })
     .populate("category", "title")
