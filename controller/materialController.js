@@ -1,5 +1,6 @@
 const materialDimensionDb = require("../model/materialDimensionModel");
 const base64_encode = require("../helpers/base64");
+const fs = require("fs");
 
 exports.getMaterial = (req, res, next) => {
   materialDimensionDb

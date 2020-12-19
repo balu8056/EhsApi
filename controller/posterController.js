@@ -1,5 +1,6 @@
 const posterDb = require("../model/posterModel");
 const base64_encode = require("../helpers/base64");
+const fs = require("fs");
 
 exports.createPoster = async (req, res, next) => {
   let {
@@ -32,7 +33,7 @@ exports.createPoster = async (req, res, next) => {
     creator,
     imgUrl: {
       data: imageAsBase64,
-      contentType: "image/jpg"
+      contentType: "image/jpg",
     },
     priceGroup,
     description,
@@ -51,6 +52,11 @@ exports.createPoster = async (req, res, next) => {
   newPoster
     .save()
     .then((poster) => {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (err) {
+        console.error(err);
+      }
       res.status(200).json({
         message: "sucesfully created",
         poster: poster,
