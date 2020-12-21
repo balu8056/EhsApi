@@ -18,15 +18,15 @@ exports.getMaterial = (req, res, next) => {
 /*
 material id: 
 
-  ["5fddad39a2a208c5a841ef27",
-  "5fddae4fa2a208c5a841ef28",
-  "5fddae65a2a208c5a841ef29"]
+  ["5fdf1044c64b6a00045c9da8",
+  "5fdf106fc64b6a00045c9da9",
+  "5fdf108ac64b6a00045c9daa"]
 
 dimension id :
 
-  ["5fddaf06a140cc897c457e4e",
-  "5fddaf23a140cc897c457e4f",
-  "5fddaf92ead92320b53fd952"]
+  ["5fdf10adc64b6a00045c9dab",
+  "5fdf10bec64b6a00045c9dac",
+  "5fdf10cbc64b6a00045c9dad"]
 
 */
 
