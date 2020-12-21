@@ -1,8 +1,9 @@
 const express = require('express');
 const auth = require('../controller/authController');
+const verifyJwt = require("../middleware/jwt"); 
 const router = express.Router();
 
-router.get('/getUsers', auth.getUsers);
+router.get('/getUsers',verifyJwt, auth.getUsers);
 
 router.post('/signup', auth.checkAlreadyUserExist, auth.signup);
 

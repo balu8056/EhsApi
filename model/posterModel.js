@@ -12,7 +12,7 @@ const posterModel = new schema(
       ref: "category",
     },
     subCategory: {
-      type: [{type: mongoose.Schema.Types.ObjectId, ref: "subcategory",}],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "subcategory" }],
       default: [],
     },
     language: {
@@ -25,7 +25,7 @@ const posterModel = new schema(
     },
     imgUrl: {
       data: String,
-      contentType: String
+      contentType: String,
     },
     priceGroup: {
       type: String,
@@ -42,48 +42,52 @@ const posterModel = new schema(
     stocks: {
       type: Number,
     },
-    rating:{
-        type: [{
-          userId : {
+    rating: {
+      type: [
+        {
+          userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
           },
-          rating : {
-              type : String,
-          }
-        }],
-        default: [],
-      },
+          rating: {
+            type: String,
+          },
+        },
+      ],
+      default: [],
+    },
     bought: {
       type: Number,
-      default:0
+      default: 0,
     },
     reviews: {
-        type: [{
-            userId : {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "user",
-            },
-            feedback : {
-                type : String,
-            }
-          }],
-        default: []
+      type: [
+        {
+          userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+          },
+          feedback: {
+            type: String,
+          },
+        },
+      ],
+      default: [],
     },
     material: {
-        type: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "MaterialDimension",
-          }
-        ],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "MaterialDimension",
+        },
+      ],
     },
     dimension: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
           ref: "MaterialDimension",
-        }
+        },
       ],
     },
     tags: {
@@ -101,10 +105,10 @@ const posterModel = new schema(
     sale: {
       type: String,
     },
-    isActive:{
-        type:Boolean,
-        default:true
-    }
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
