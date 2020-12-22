@@ -16,9 +16,7 @@ const posterModel = new schema(
       ref: "subcategory",
     },
     language: {
-      type: Array,
-      required: false,
-      default: ["English"],
+      type: String,
     },
     creator: {
       type: String,
