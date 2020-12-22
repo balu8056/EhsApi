@@ -12,8 +12,8 @@ const posterModel = new schema(
       ref: "category",
     },
     subCategory: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "subcategory" }],
-      default: [],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "subcategory",
     },
     language: {
       type: Array,
