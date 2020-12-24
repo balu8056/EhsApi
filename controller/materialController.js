@@ -1,4 +1,6 @@
 const materialDimensionDb = require("../model/materialDimensionModel");
+const base64_encode = require("../helpers/base64");
+const fs = require("fs");
 
 exports.getMaterial = (req, res, next) => {
   materialDimensionDb
@@ -29,17 +31,27 @@ dimension id :
 */
 
 exports.createMaterial = async (req, res, next) => {
-  const { title, imgUrl, type } = req.body;
+  const { title, type } = req.body;
+
+  const imageAsBase64 = base64_encode(req.file.path);
 
   const newMetDim = await new materialDimensionDb({
     title,
-    imgUrl,
+    imgUrl: {
+      data: imageAsBase64,
+      contentType: "image/jpg",
+    },
     type,
   });
 
   newMetDim
     .save()
     .then((metDim) => {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (err) {
+        console.error(err);
+      }
 
       res.status(200).json({
         message: "sucesfully created",

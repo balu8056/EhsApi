@@ -22,7 +22,8 @@ const posterModel = new schema(
       type: String,
     },
     imgUrl: {
-      type: String,
+      data: String,
+      contentType: String,
     },
     priceGroup: {
       type: String,

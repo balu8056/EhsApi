@@ -1,4 +1,6 @@
 const posterDb = require("../model/posterModel");
+const base64_encode = require("../helpers/base64");
+const fs = require("fs");
 
 exports.createPoster = async (req, res, next) => {
   let {
@@ -7,7 +9,6 @@ exports.createPoster = async (req, res, next) => {
     subCategory,
     language,
     creator,
-    imgUrl,
     priceGroup,
     description,
     originalPrice,
@@ -22,13 +23,18 @@ exports.createPoster = async (req, res, next) => {
     sale,
   } = req.body;
 
+  const imageAsBase64 = base64_encode(req.file.path);
+
   const newPoster = await new posterDb({
     name,
     category,
     subCategory,
     language,
     creator,
-    imgUrl,
+    imgUrl: {
+      data: imageAsBase64,
+      contentType: "image/jpg",
+    },
     priceGroup,
     description,
     originalPrice,
@@ -46,6 +52,11 @@ exports.createPoster = async (req, res, next) => {
   newPoster
     .save()
     .then((poster) => {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (err) {
+        console.error(err);
+      }
       res.status(200).json({
         message: "sucesfully created",
         poster: poster,
