@@ -94,7 +94,15 @@ exports.updatePoster = async (req, res, next) => {
   payload.subCategory ? (updateObj.subCategory = payload.subCategory) : null;
   payload.language ? (updateObj.language = payload.language) : null;
   payload.creator ? (updateObj.creator = payload.creator) : null;
-  payload.imgUrl ? (updateObj.imgUrl = payload.imgUrl) : null;
+
+  // let imageAsBase64;
+  // try{
+  //   imageAsBase64 = base64_encode(req.file.path);
+  // }catch(err){}
+  // payload.imgUrl
+  //   ? (updateObj.imgUrl = { data: imageAsBase64, contentType: "image/jpg" })
+  //   : null;
+
   payload.priceGroup ? (updateObj.priceGroup = payload.priceGroup) : null;
   payload.description ? (updateObj.description = payload.description) : null;
   payload.originalPrice
