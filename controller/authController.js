@@ -81,7 +81,7 @@ exports.signup = async (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { emailid: user.emailid, userid: user._id },
-        process.env.SECRET,
+        `${process.env.SECRET}` || "NaveenKmrBala",
         { expiresIn: 300 }
       );
       const link = `localhost/auth/activate/${token}`;
@@ -120,7 +120,7 @@ exports.checkAlreadyActivated = (req, res, next) => {
 
   let deauthtoken;
   try {
-    deauthtoken = jwt.verify(token, process.env.SECRET);
+    deauthtoken = jwt.verify(token, `${process.env.SECRET}`|| "NaveenKmrBala");
   } catch (err) {}
 
   if (!deauthtoken) {
@@ -176,7 +176,7 @@ exports.login = (req, res, next) => {
             } else {
               const token = jwt.sign(
                 { emailid: userRes.emailid, userid: userRes._id },
-                process.env.SECRET,
+                `${process.env.SECRET}` || "NaveenKmrBala",
                 { expiresIn: 86400 }
               );
 
