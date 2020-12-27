@@ -5,7 +5,10 @@ const router = express.Router();
 
 router.get('/getUsers',verifyJwt, auth.getUsers);
 
+router.get('/getUserById/:authId',verifyJwt, auth.getUserById);
+
 router.post('/signup', auth.checkAlreadyUserExist, auth.signup);
+router.get('/activate/:token', auth.checkAlreadyActivated, auth.activateAccount);
 
 router.post('/login', auth.login);
 

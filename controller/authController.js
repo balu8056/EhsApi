@@ -1,6 +1,7 @@
 const userDb = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const transporter = require("../helpers/mail");
 require("dotenv").config();
 
 const saltRounds = 10;
@@ -12,11 +13,34 @@ exports.getUsers = (req, res, next) => {
       "_id firstname lastname emailid phonenumber address isAccountActive isActive"
     )
     .then((users) => {
-      res.status(200).json({ users: users });
+      res.status(200).json({ message: "Successfully loaded!!!", users: users });
     })
     .catch((err) => {
       res.status(400).json({ error: `${err}` });
     });
+};
+
+exports.getUserById = (req, res, next) => {
+  const authId = req.params.authId;
+
+  try {
+    userDb
+      .findOne(
+        { _id: authId },
+        "_id firstname lastname emailid phonenumber address isAccountActive isActive"
+      )
+      .then((users) => {
+        if (!users) res.status(404).json({ message: "user not found!!!" });
+        res
+          .status(200)
+          .json({ message: "Successfully loaded!!!", users: users });
+      })
+      .catch((err) => {
+        res.status(400).json({ error: `${err}` });
+      });
+  } catch (err) {
+    res.status(400).json({ error: `${err}` });
+  }
 };
 
 exports.checkAlreadyUserExist = (req, res, next) => {
@@ -55,13 +79,35 @@ exports.signup = async (req, res, next) => {
   newUser
     .save()
     .then((user) => {
+      const token = jwt.sign(
+        { emailid: user.emailid, userid: user._id },
+        process.env.SECRET,
+        { expiresIn: 300 }
+      );
+      const link = `localhost/auth/activate/${token}`;
+      let mailOptions = {
+        from: "sqaud.hex@gmail.com",
+        to: user.emailid,
+        subject: "EHS prints",
+        html: `<a href=${link}>click to activate account</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+
       res.status(200).json({
         message: "User Created Successfully",
+        mailInfo: "click the link that we have sent to your mail!!!",
         user: {
           firstname: user.firstname,
           lastname: user.lastname,
-          emailid: user.emailid
-        }
+          emailid: user.emailid,
+        },
       });
     })
     .catch((err) => {
@@ -69,38 +115,85 @@ exports.signup = async (req, res, next) => {
     });
 };
 
+exports.checkAlreadyActivated = (req, res, next) => {
+  const token = req.params.token;
+
+  let deauthtoken;
+  try {
+    deauthtoken = jwt.verify(token, process.env.SECRET);
+  } catch (err) {}
+
+  if (!deauthtoken) {
+    res.status(400).json({ message: "invalid token!!!" });
+  }
+  let userid = deauthtoken.userid;
+
+  userDb
+    .findOne({ _id: userid })
+    .then((users) => {
+      if (!users) res.status(404).json({ message: "user not found!!!" });
+      else {
+        if (users.isAccountActive)
+          res.status(404).json({ message: "User Already Activated!!!" });
+        else {
+          req.userid = userid;
+          next();
+        }
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ error: `${err}` });
+    });
+};
+
+exports.activateAccount = async (req, res, next) => {
+  const userid = req.userid;
+  try {
+    let result = await userDb
+      .updateOne({ _id: userid }, { isAccountActive: true })
+      .exec();
+    res.status(200).json({ message: "Account activated" });
+  } catch (err) {
+    res.status(400).json({ error: `${err}` });
+  }
+};
+
 exports.login = (req, res, next) => {
   const { emailid, password } = req.body;
   userDb
-    .findOne({ emailid: emailid, isAccountActive: true, isActive: true })
+    .findOne({ emailid: emailid, isActive: true })
     .populate("cart.itemDetails", "_id name imgUrl originalPrice")
     .then((userRes) => {
       if (!userRes) {
         res.status(400).json({ message: "user not found!!!" });
       } else {
-        bcrypt.compare(password, userRes.password, (err, isSame) => {
-          if (!isSame) {
-            res.status(400).json({ message: "password doesn't match!!!" });
-          } else {
-            const token = jwt.sign(
-              { emailid: userRes.emailid, userid: userRes._id },
-              process.env.SECRET,
-              { expiresIn: 86400 }
-            );
+        if (!userRes.isAccountActive) {
+          res.status(400).json({ message: "Account is not activated!!!" });
+        } else {
+          bcrypt.compare(password, userRes.password, (err, isSame) => {
+            if (!isSame) {
+              res.status(400).json({ message: "password doesn't match!!!" });
+            } else {
+              const token = jwt.sign(
+                { emailid: userRes.emailid, userid: userRes._id },
+                process.env.SECRET,
+                { expiresIn: 86400 }
+              );
 
-            res.status(200).json({
-              message: "Logged in successfully!!!",
-              token: token,
-              user: {
-                userid: userRes.userid,
-                firstname: userRes.firstname,
-                lastname: userRes.lastname,
-                emailid: userRes.emailid,
-                cart: userRes.cart
-              },
-            });
-          }
-        });
+              res.status(200).json({
+                message: "Logged in successfully!!!",
+                token: token,
+                user: {
+                  userid: userRes.userid,
+                  firstname: userRes.firstname,
+                  lastname: userRes.lastname,
+                  emailid: userRes.emailid,
+                  cart: userRes.cart,
+                },
+              });
+            }
+          });
+        }
       }
     })
     .catch((err) => {

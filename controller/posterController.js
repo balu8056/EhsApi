@@ -67,6 +67,34 @@ exports.createPoster = async (req, res, next) => {
     });
 };
 
+exports.getPosterById = (req, res, next) => {
+  try {
+    let posterId = req.params.posterId;
+    try {
+      posterDb
+        .findOne({ _id: posterId, isActive: true })
+        .populate("category", "title")
+        .populate("subCategory", "title")
+        .populate("material", "title imgUrl")
+        .populate("dimension", "title imgUrl")
+        .then((poster) => {
+          if(!poster)          
+            res.status(404).json({ message: "poster not found!!!" });
+          res
+            .status(200)
+            .json({ message: "succesfully loaded", posterData: poster });
+        })
+        .catch((err) => {
+          res.status(400).json({ error: `${err}`});
+        });
+    } catch (err) {
+      res.status(400).json({ error: `${err}` });
+    }
+  } catch (err) {
+    res.status(400).json({ error: `${err}` });
+  }
+};
+
 exports.getPoster = (req, res, next) => {
   posterDb
     .find({ isActive: true })
@@ -95,13 +123,7 @@ exports.updatePoster = async (req, res, next) => {
   payload.language ? (updateObj.language = payload.language) : null;
   payload.creator ? (updateObj.creator = payload.creator) : null;
 
-  // let imageAsBase64;
-  // try{
-  //   imageAsBase64 = base64_encode(req.file.path);
-  // }catch(err){}
-  // payload.imgUrl
-  //   ? (updateObj.imgUrl = { data: imageAsBase64, contentType: "image/jpg" })
-  //   : null;
+  //payload.imgUrl ? (updateObj.imgUrl = payload.imgUrl) : null;
 
   payload.priceGroup ? (updateObj.priceGroup = payload.priceGroup) : null;
   payload.description ? (updateObj.description = payload.description) : null;
@@ -134,7 +156,6 @@ exports.updatePoster = async (req, res, next) => {
 
 exports.deletePoster = async (req, res, next) => {
   let { posterId } = req.body;
-
   try {
     let result = await posterDb
       .update({ _id: posterId }, { isActive: false }, { multi: false })

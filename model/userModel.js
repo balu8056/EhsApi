@@ -24,7 +24,7 @@ const userschema = mongoose.Schema(
     },
     isAccountActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isActive: {
       type: Boolean,

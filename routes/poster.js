@@ -7,6 +7,8 @@ const verifyJwt = require("../middleware/jwt");
 
 router.get('/getPoster', verifyJwt, posterControl.getPoster);
 
+router.get('/getPosterById/:posterId', verifyJwt, posterControl.getPosterById);
+
 router.post('/createPoster', storageUrl.single("imgUrl"), posterControl.createPoster);
 
 router.post('/updatePoster', storageUrl.single("imgUrl"), posterControl.updatePoster);
