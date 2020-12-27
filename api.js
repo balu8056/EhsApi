@@ -41,7 +41,7 @@ app.use("/auth", auth);
 app.use("/orders", orders);
 
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "hellooo!!!" });
+  res.status(200).json({ message: "hellooo!!!", url: `${req.protocol}://${req.get('host')}`  });
 });
 
 mongoose

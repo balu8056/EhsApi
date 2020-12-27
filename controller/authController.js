@@ -92,22 +92,20 @@ exports.signup = async (req, res, next) => {
         html: `<a href=${link}>click to activate account</a>`,
       };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          res.status(400).json({ error: `${err}` });
         } else {
           console.log("Email sent: " + info.response);
+          res.status(200).json({
+            message: "User Created Successfully and click the link that we have sent to your mail!!!",
+            user: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              emailid: user.emailid,
+            },
+          });
         }
-      });
-
-      res.status(200).json({
-        message: "User Created Successfully",
-        mailInfo: "click the link that we have sent to your mail!!!",
-        user: {
-          firstname: user.firstname,
-          lastname: user.lastname,
-          emailid: user.emailid,
-        },
       });
     })
     .catch((err) => {
@@ -115,17 +113,14 @@ exports.signup = async (req, res, next) => {
     });
 };
 
-exports.checkAlreadyActivated = (req, res, next) => {
+exports.activateAccount = (req, res, next) => {
   const token = req.params.token;
 
   let deauthtoken;
-  try {
-    deauthtoken = jwt.verify(token, `${process.env.SECRET}`|| "NaveenKmrBala");
+  try { deauthtoken = jwt.verify(token, `${process.env.SECRET}`|| "NaveenKmrBala");
   } catch (err) {}
 
-  if (!deauthtoken) {
-    res.status(400).json({ message: "invalid token!!!" });
-  }
+  if (!deauthtoken) {res.status(400).json({ message: "invalid token!!!" });}
   let userid = deauthtoken.userid;
 
   userDb
@@ -136,26 +131,17 @@ exports.checkAlreadyActivated = (req, res, next) => {
         if (users.isAccountActive)
           res.status(404).json({ message: "User Already Activated!!!" });
         else {
-          req.userid = userid;
-          next();
+          users.isAccountActive = true;
+          users.save(err=>{
+            if (err) {res.status(400).json({ error: `${err}` });}
+            else{ res.status(200).json({ message: "Account activated" });}
+          });
         }
       }
     })
     .catch((err) => {
       res.status(400).json({ error: `${err}` });
     });
-};
-
-exports.activateAccount = async (req, res, next) => {
-  const userid = req.userid;
-  try {
-    let result = await userDb
-      .updateOne({ _id: userid }, { isAccountActive: true })
-      .exec();
-    res.status(200).json({ message: "Account activated" });
-  } catch (err) {
-    res.status(400).json({ error: `${err}` });
-  }
 };
 
 exports.login = (req, res, next) => {
