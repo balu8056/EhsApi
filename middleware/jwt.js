@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     let deauthtoken;
 
     if (!authheader) {res.status(400).json({ message: "not logged in" });}
-    try {deauthtoken = jwt.verify(authheader, process.env.SECRET);}
+    try {deauthtoken = jwt.verify(authheader, `${process.env.SECRET}` || "NaveenKmrBala");}
     catch (err) {}
 
     if (!deauthtoken) {

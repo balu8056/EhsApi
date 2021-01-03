@@ -78,14 +78,13 @@ exports.getPosterById = (req, res, next) => {
         .populate("material", "title imgUrl")
         .populate("dimension", "title imgUrl")
         .then((poster) => {
-          if(!poster)          
-            res.status(404).json({ message: "poster not found!!!" });
+          if (!poster) res.status(404).json({ message: "poster not found!!!" });
           res
             .status(200)
             .json({ message: "succesfully loaded", posterData: poster });
         })
         .catch((err) => {
-          res.status(400).json({ error: `${err}`});
+          res.status(400).json({ error: `${err}` });
         });
     } catch (err) {
       res.status(400).json({ error: `${err}` });
@@ -102,6 +101,7 @@ exports.getPoster = (req, res, next) => {
     .populate("subCategory", "title")
     .populate("material", "title imgUrl")
     .populate("dimension", "title imgUrl")
+    .lean()
     .then((poster) => {
       res
         .status(200)

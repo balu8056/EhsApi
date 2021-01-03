@@ -84,7 +84,7 @@ exports.signup = async (req, res, next) => {
         `${process.env.SECRET}` || "NaveenKmrBala",
         { expiresIn: 300 }
       );
-      const link = `localhost/auth/activate/${token}`;
+      const link = `${req.protocol}://${req.get("host")}/auth/activate/${token}`;
       let mailOptions = {
         from: "sqaud.hex@gmail.com",
         to: user.emailid,
@@ -96,7 +96,7 @@ exports.signup = async (req, res, next) => {
         if (err) {
           res.status(400).json({ error: `${err}` });
         } else {
-          console.log("Email sent: " + info.response);
+          //console.log("Email sent!!!");
           res.status(200).json({
             message: "User Created Successfully and click the link that we have sent to your mail!!!",
             user: {
@@ -242,6 +242,6 @@ exports.updateUserDetails = async (req, res, next) => {
     let result = await userDb.updateOne({ emailid }, req.updateObj).exec();
     res.status(200).json({ updated: true });
   } catch (err) {
-    res.status(400).json({ error: `${err}` });
+    res.status(400).json({ updated: false, error: `${err}` });
   }
 };

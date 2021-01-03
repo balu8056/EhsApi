@@ -10,6 +10,9 @@ const materialDimensionModel = new schema({
       data: String,
       contentType: String
     },
+    // imgUrl: {
+    //   type: String
+    // },
     type: {
       type: Number,
     },
