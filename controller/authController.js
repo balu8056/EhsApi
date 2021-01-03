@@ -81,7 +81,7 @@ exports.signup = async (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { emailid: user.emailid, userid: user._id },
-        `${process.env.SECRET}` || "NaveenKmrBala",
+        "NaveenKumar",
         { expiresIn: 300 }
       );
       const link = `${req.protocol}://${req.get("host")}/auth/activate/${token}`;
@@ -117,7 +117,7 @@ exports.activateAccount = (req, res, next) => {
   const token = req.params.token;
 
   let deauthtoken;
-  try { deauthtoken = jwt.verify(token, `${process.env.SECRET}`|| "NaveenKmrBala");
+  try { deauthtoken = jwt.verify(token, "NaveenKumar");
   } catch (err) {}
 
   if (!deauthtoken) {res.status(400).json({ message: "invalid token!!!" });}
